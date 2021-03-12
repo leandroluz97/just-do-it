@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Html validation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form action="" id="form">
+      <span class="error"></span>
+      <div class="form__group">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" />
+        <span class="name__error"></span>
+      </div>
+      <div class="form__group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" />
+        <span class="email__error"></span>
+      </div>
+      <div class="form__group">
+        <label for="phone">Phone</label>
+        <input type="number" name="name" id="tel" />
+        <span class="tel__error"></span>
+      </div>
+      <div class="form__group">
+        <label for="password">password</label>
+        <input type="password" name="current-password" id="password" />
+        <span class="password__error"></span>
+      </div>
+
+      <button>Submit</button>
+    </form>
+    <script src="index.js"></script>
+  </body>
+</html>

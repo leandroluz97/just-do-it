@@ -138,11 +138,6 @@ const App = () => {
       calculator.updateDisplay()
     })
 
-    ui.result.addEventListener("click", (button) => {
-      calculator.compute()
-      calculator.updateDisplay()
-    })
-
     ui.clearBtn.addEventListener("click", (button) => {
       calculator.clear()
       calculator.updateDisplay()
