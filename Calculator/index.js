@@ -86,13 +86,14 @@ class Calculator {
     const decimalDigits = stringNumber.split(".")[1]
 
     let intergerDisplay
-
+    console.log(isNaN("integerDigits"))
     if (isNaN(integerDigits)) {
       intergerDisplay = ""
     } else {
       intergerDisplay = integerDigits.toLocaleString("en", {
         maximumFractionDigits: 0,
       })
+      console.log(intergerDisplay)
     }
 
     if (decimalDigits != null) {
