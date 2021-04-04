@@ -85,10 +85,4 @@ const group = obj.reduce(
 )
 console.log("group:", group)
 
-async function test() {
-  return await 1
-}
 
-const tesvar = test()
-
-tesvar.then((data) => console.log(data))
