@@ -21,4 +21,4 @@ function divisibleSumPairs(n, k, ar) {
   return result
 }
 
-divisibleSumPairs(6, 5, ar)
+console.log(divisibleSumPairs(6, 5, ar));
