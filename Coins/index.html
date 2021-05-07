@@ -12,7 +12,7 @@
     <form id="form">
       <div class="form__group">
         <label for="input">Local currency</label>
-        <input type="number" id="input" />
+        <input type="number" id="input" required />
         <select name="inputcurrency" id="inputcurrency">
           <option value="ecv">ECV</option>
           <option value="real">BRL</option>
@@ -23,7 +23,7 @@
       </div>
       <div class="form__group">
         <label for="output">Desired currency</label>
-        <input type="number" id="output" />
+        <input type="number" id="output"  required/>
         <select name="outputcurrency" id="outputcurrency">
           <option value="ecv">ECV</option>
           <option value="real">BRL</option>
@@ -35,7 +35,7 @@
       <input type="checkbox" name="switcher" id="switcher" />
       <button type="submit" id="convert">Convert</button>
     </form>
-    <p id="result">99</p>
+    <p id="result"></p>
 
     <script src="app.js"></script>
   </body>
