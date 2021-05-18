@@ -53,20 +53,41 @@ function averageDailySales(arr) {
   ]
 
   const dailySales = weekdays.reduce((acc, value) => {
-    acc[value] = 0
-
+    acc[value] = []
     return acc
   }, {})
 
   for (let i = 0; i < arr.length; i++) {
     let data = new Date(arr[i].creationDate).getDay()
 
-    dailySales[weekdays[data]] = arr[i].orderLines.reduce((acc, value) => {
-      return acc + value.quantity
-    }, 0)
+    for (let j = 0; j < arr[i].orderLines.length; j++) {
+      dailySales[weekdays[data]].push(arr[i].orderLines[j].quantity)
+    }
   }
 
-  return dailySales
+  for (const key in dailySales) {
+    dailySales[key] =
+      dailySales[key].length > 0
+        ? dailySales[key].reduce((acc, value, index, ar) => {
+            acc = acc + value
+            if (index === ar.length - 1) {
+              acc =
+                (acc / ar.length) % 1 > 0.5
+                  ? Math.ceil(acc / ar.length)
+                  : Math.floor(acc / ar.length)
+              console.log(acc)
+              return acc
+            }
+
+            return acc
+          })
+        : 0
+  }
+  console.log(dailySales)
+
+  return
 }
 
 console.log(averageDailySales(arr))
+
+console.log(1 % 1)
