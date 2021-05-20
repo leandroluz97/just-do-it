@@ -1,3 +1,6 @@
+//https://www.hackerrank.com/challenges/circular-array-rotation/problem
+//Circular Array Rotation
+
 function circularArrayRotation(a, k, queries) {
   // Write your code here
   /*
@@ -16,7 +19,7 @@ function circularArrayRotation(a, k, queries) {
     arr[(i + k) % a.length] = a[i]
   }
 
-  //store the requested indexes in a new array
+  //store the requested indexes
   for (let j = 0; j < queries.length; j++) {
     result.push(arr[queries[j]])
   }
