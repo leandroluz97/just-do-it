@@ -89,5 +89,3 @@ function averageDailySales(arr) {
 }
 
 console.log(averageDailySales(arr))
-
-console.log(1 % 1)
