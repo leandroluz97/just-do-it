@@ -41,23 +41,23 @@ The fifth line contains  space-separated integers denoting the respective distan
 function fruitsInSamHouse(s, t, treeDistance, fruits) {
   const numberOfFruit = fruits
     .map((apple) => {
-      return apple + treeDistance
+      return apple + treeDistance;
     })
     .reduce((acc, val) => {
       if (val >= s && val <= t) {
-        return acc + 1
+        return acc + 1;
       }
-      return acc
-    }, 0)
+      return acc;
+    }, 0);
 
-  return numberOfFruit
+  return numberOfFruit;
 }
 function countApplesAndOranges(s, t, a, b, apples, oranges) {
-  const numberOfApples = fruitsInSamHouse(s, t, a, apples)
-  const numberOfOrange = fruitsInSamHouse(s, t, b, oranges)
+  const numberOfApples = fruitsInSamHouse(s, t, a, apples);
+  const numberOfOrange = fruitsInSamHouse(s, t, b, oranges);
 
-  console.log(numberOfApples)
-  console.log(numberOfOrange)
+  console.log(numberOfApples);
+  console.log(numberOfOrange);
 }
 
-countApplesAndOranges(7, 11, 5, 15, [-2, 2, 1], [5, -6])
+countApplesAndOranges(7, 11, 5, 15, [-2, 2, 1], [5, -6]);
