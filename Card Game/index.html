@@ -7,15 +7,42 @@
     <link rel="stylesheet" href="style.css" />
     <title>Card game</title>
   </head>
+
+  <style>
+    body {
+      background-image: url("./assets/background.png");
+      background-repeat: no-repeat;
+      background-size: cover;
+      height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .playerOne,
+    .playerTwo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 16px;
+      column-gap: 16px;
+    }
+    img {
+      max-width: 200px;
+    }
+  </style>
   <body>
     <main>
-      <div class="playerOne">
-        <div class="back__card"></div>
+      <div class="playerOne" id="playerOne">
+        <div class="back__card">
+          <img src="./assets/red_back.png" alt="" />
+        </div>
         <div class="front__card"></div>
       </div>
-      <h2 class="message"></h2>
-      <div class="playerTwo">
-        <div class="back__card"></div>
+      <h2 id="message"></h2>
+      <div class="playerTwo" id="playerTwo">
+        <div class="back__card">
+          <img src="./assets/red_back.png" alt="" />
+        </div>
         <div class="front__card"></div>
       </div>
     </main>
