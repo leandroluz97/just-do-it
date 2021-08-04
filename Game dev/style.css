@@ -1,0 +1,7 @@
+#gameScreen {
+  border: solid 1px black;
+}
+
+#img_ball {
+  display: none;
+}

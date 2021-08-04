@@ -175,6 +175,10 @@ class UserInterface {
     this.playerOneFrontCard.innerHTML = `<img src=${cardOne.src} alt="cardOne" />`;
     this.playerTwoFrontCard.innerHTML = `<img src=${CardTwo.src} alt="cardOne" />`;
   }
+
+  showWinner(sms) {
+    this.message.innerHTML = sms;
+  }
 }
 
 class Play {
@@ -188,31 +192,27 @@ class Play {
   }
 
   playCards(playerOneKey, playerTwoKey) {
-    if (this.keysPlayerOne.length + this.keysPlayerTwo.length == 0)
-      return "Its a DRAW";
-    if (this.keysPlayerOne.length == 0) return "Game Over! YOU WON ";
-    if (this.keysPlayerTwo.length == 0) return "Game Over! COMPUTER WON ";
+    //check the availables cards
+    if (this.gameOver()) return;
 
-    this.checkHigherCardPoint(
-      this.playerOne[playerOneKey],
-      this.playerTwo[playerTwoKey]
-    );
-  }
+    //
+    const playerOneCard = this.playerOne[playerOneKey];
+    const playerTwoCard = this.playerTwo[playerTwoKey];
 
-  checkHigherCardPoint(playerOneCard, playerTwoCard) {
     if (playerOneCard.number > playerTwoCard.number) {
       this.deleteCard(playerTwoCard.id, this.playerTwoStr);
 
-      return "Player Two Lost";
+      return "You Lost!";
     }
 
     if (playerOneCard.number < playerTwoCard.number) {
       this.deleteCard(playerOneCard.id, this.playerOneStr);
 
-      return "Player One Lost";
+      return "You Won!";
     }
 
     this.keepCards(playerTwoCard.id);
+    return "It's a Draw";
   }
 
   keepCards(key) {
@@ -248,6 +248,15 @@ class Play {
       keysPlayerTwo: this.keysPlayerTwo,
     };
   }
+
+  gameOver() {
+    if (this.keysPlayerOne.length === 0 && this.keysPlayerTwo.length === 0)
+      return "Game Over. It's a Draw";
+    if (this.keysPlayerOne.length === 0) return "Game Over. YOU WON! ";
+    if (this.keysPlayerTwo.length === 0) return "Game Over. COMPUTER WON! ";
+
+    return false;
+  }
 }
 
 function App(Cards, UserInterface) {
@@ -263,6 +272,11 @@ function App(Cards, UserInterface) {
   function populateCards() {
     const { keysPlayerOne, keysPlayerTwo } = play.getPlayersKeys();
 
+    if (play.gameOver()) {
+      ui.showWinner(play.gameOver());
+      return;
+    }
+
     const lengthOfCardsOne = keysPlayerOne.length - 1;
     const lengthOfCardsTwo = keysPlayerTwo.length - 1;
 
@@ -272,11 +286,16 @@ function App(Cards, UserInterface) {
     const randomOne = Math.floor(Math.random() * lengthOfCardsOne);
     const randomTwo = Math.floor(Math.random() * lengthOfCardsTwo);
 
-    play.playCards(shuffleCardKeyOne[randomOne], shuffleCardKeyTwo[randomTwo]);
+    const sms = play.playCards(
+      shuffleCardKeyOne[randomOne],
+      shuffleCardKeyTwo[randomTwo]
+    );
     ui.showCardsPlayed(
       allCards[shuffleCardKeyOne[randomOne]],
       allCards[shuffleCardKeyTwo[randomTwo]]
     );
+
+    ui.showWinner(sms);
   }
 
   return {
@@ -293,7 +312,7 @@ app.init();
 check who got the hightiest card
 the player with greater card keep the his card
 the player with the lower card lose his card
-in case of with draw both lose their card
+in case of withdraw both lose their card
 the last to keep card win
 
 
