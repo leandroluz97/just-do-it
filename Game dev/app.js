@@ -1,7 +1,36 @@
+function detectionCollision(ball, gameObject) {
+  let bottomOfBall = ball.position.y + ball.size;
+  let topOfBall = ball.position.y;
+
+  let topOfObject = gameObject.position.y;
+  let bottomOfObject = gameObject.position.y + gameObject.height;
+
+  let leftSideOfObject = gameObject.position.x;
+  let rightSideOfObject = gameObject.position.x + gameObject.width;
+
+  if (
+    bottomOfBall >= topOfObject &&
+    topOfBall <= bottomOfObject &&
+    ball.position.x >= leftSideOfObject &&
+    ball.position.x + ball.size <= rightSideOfObject
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+const GAMESTATE = {
+  PAUSED: 0,
+  RUNNING: 1,
+  MENU: 2,
+  GAMEOVER: 3,
+};
+
 class Paddle {
-  constructor(gameWidth, gameHeight) {
-    this.gameWidth = gameWidth;
-    this.gameHeight = gameWidth;
+  constructor(game) {
+    this.gameWidth = game.gameWidth;
+    this.gameHeight = game.gameWidth;
 
     this.width = 150;
     this.height = 20;
@@ -10,8 +39,8 @@ class Paddle {
     this.speed = 0;
 
     this.position = {
-      x: gameWidth / 2 - this.width / 2,
-      y: gameHeight - this.height - 10,
+      x: game.gameWidth / 2 - this.width / 2,
+      y: game.gameHeight - this.height - 10,
     };
   }
 
@@ -42,7 +71,7 @@ class Paddle {
 }
 
 class InputHandler {
-  constructor(paddle) {
+  constructor(paddle, game) {
     document.addEventListener("keydown", (event) => {
       switch (event.code) {
         case "ArrowLeft":
@@ -51,6 +80,10 @@ class InputHandler {
           break;
         case "ArrowRight":
           paddle.moveRight();
+          break;
+
+        case "Space":
+          game.togglePause();
           break;
 
         default:
@@ -76,21 +109,23 @@ class InputHandler {
 }
 
 class Ball {
-  constructor(gameWidth, gameHeight) {
-    this.imgBall = document.querySelector("#img_ball");
+  constructor(game) {
+    this.image = document.querySelector("#img_ball");
 
-    this.position = { x: 10, y: 10 };
-    this.speed = { x: 2, y: 2 };
+    this.position = { x: 10, y: 400 };
+    this.speed = { x: 4, y: -2 };
+
+    this.game = game;
+
+    this.gameWidth = game.gameWidth;
+    this.gameHeight = game.gameHeight;
 
     this.size = 16;
-
-    this.gameWidth = gameWidth;
-    this.gameHeight = gameHeight;
   }
 
   draw(ctx) {
     ctx.drawImage(
-      this.imgBall,
+      this.image,
       this.position.x,
       this.position.y,
       this.size,
@@ -102,12 +137,136 @@ class Ball {
     this.position.x += this.speed.x;
     this.position.y += this.speed.y;
 
-    if (this.position.x > this.gameWidth || this.position.x < 0) {
+    //wall on left or right
+    if (this.position.x + this.size > this.gameWidth || this.position.x < 0) {
       this.speed.x = -this.speed.x;
     }
 
-    if (this.position.y > this.gameHeight || this.position.y < 0) {
+    //wall top or bottom
+    if (this.position.y + this.size > this.gameHeight || this.position.y < 0) {
       this.speed.y = -this.speed.y;
+    }
+
+    //check collision with paddle
+
+    if (detectionCollision(this, this.game.paddle)) {
+      this.speed.y = -this.speed.y;
+      this.position.y = this.game.paddle.position.y - this.size;
+    }
+  }
+}
+
+class Brick {
+  constructor(game, position) {
+    this.image = document.querySelector("#img_brick");
+
+    this.position = position;
+
+    this.game = game;
+
+    this.gameWidth = game.gameWidth;
+    this.gameHeight = game.gameHeight;
+
+    this.width = 80;
+    this.height = 24;
+
+    this.markedForDeletion = false;
+  }
+
+  update() {
+    if (detectionCollision(this.game.ball, this)) {
+      this.game.ball.speed.y = -this.game.ball.speed.y;
+
+      this.markedForDeletion = true;
+    }
+  }
+
+  draw(ctx) {
+    ctx.drawImage(
+      this.image,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
+  }
+}
+
+const level1 = [
+  [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+];
+
+function buildLevel(game, level) {
+  let bricks = [];
+
+  level.forEach((row, rowIndex) => {
+    row.forEach((brick, brickIndex) => {
+      if (brick === 1) {
+        let position = {
+          x: 80 * brickIndex,
+          y: 75 + 24 * rowIndex,
+        };
+
+        bricks.push(new Brick(game, position));
+      }
+    });
+  });
+
+  return bricks;
+}
+
+class Game {
+  constructor(gameWidth, gameHeight) {
+    this.gameWidth = gameWidth;
+    this.gameHeight = gameHeight;
+  }
+
+  start() {
+    this.gamestate = GAMESTATE.RUNNING;
+
+    this.paddle = new Paddle(this);
+    this.ball = new Ball(this);
+
+    let bricks = buildLevel(this, level1);
+
+    this.gameObjects = [this.ball, this.paddle, ...bricks];
+
+    new InputHandler(this.paddle, this);
+  }
+
+  update(deltatime) {
+    if (this.gamestate == GAMESTATE.PAUSED) return;
+
+    this.gameObjects.forEach((object) => object.update(deltatime));
+
+    this.gameObjects = this.gameObjects.filter(
+      (object) => !object.markedForDeletion
+    );
+  }
+
+  draw(ctx) {
+    this.gameObjects.forEach((object) => object.draw(ctx));
+
+    if (this.gamestate == GAMESTATE.PAUSED) {
+      ctx.rect(0, 0, this.gameWidth, this.gameHeight);
+      ctx.fillStyle = "rgba(0,0,0,0.5)";
+      ctx.fill();
+
+      ctx.font = "30px Arial";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText("Paused", this.gameWidth / 2, this.gameHeight / 2);
+    }
+  }
+
+  togglePause() {
+    if (this.gamestate == GAMESTATE.PAUSED) {
+      this.gamestate = GAMESTATE.RUNNING;
+    } else {
+      this.gamestate = GAMESTATE.PAUSED;
     }
   }
 }
@@ -120,12 +279,8 @@ let ctx = canvas.getContext("2d");
 const GAME_HEIGHT = 600;
 const GAME_WIDTH = 800;
 
-//instances
-let paddle = new Paddle(GAME_WIDTH, GAME_HEIGHT);
-let ball = new Ball(GAME_WIDTH, GAME_HEIGHT);
-
-//input handler class
-new InputHandler(paddle);
+let game = new Game(GAME_WIDTH, GAME_HEIGHT);
+game.start();
 
 let lastTime = 0;
 
@@ -135,11 +290,8 @@ function gameLoop(timestamp) {
 
   ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-  paddle.update(deltaTime);
-  paddle.draw(ctx);
-
-  ball.update(deltaTime);
-  ball.draw(ctx);
+  game.update(deltaTime);
+  game.draw(ctx);
 
   requestAnimationFrame(gameLoop);
 }
